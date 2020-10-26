@@ -1,51 +1,32 @@
 version: 2.1
-commands:
-  destroy_environment:
-    steps:
-      - run:
-          name: Destroy environment
-          command: |
-            aws cloudformation delete-stack --stack-name ID="${CIRCLE_WORKFLOW_ID}" --region=us-west-2
-          when: on_fail
-
-
-jobs:   #Test SSH-fingerprints
-  create-infrastructure:
+jobs:
+  create_and_deploy_front_end:
     docker:
-     - image: amazon/aws-cli
+      - image: amazon/aws-cli
     steps:
       - checkout
-      - run:
-          name: Create backend
-          command: | 
-                  aws cloudformation deploy \
-                  --stack-file /CF/template.yml --stack-name ID="${CIRCLE_WORKFLOW_ID}" \
-                  --region=us-west-2
-      - destroy_environment
+      - run: |
+          aws cloudformation deploy \
+            --template-file bucket.yml \
+            --stack-name "${CIRCLE_WORKFLOW_ID}" \
+            --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID}"
+      - run: aws s3 sync . s3://"${CIRCLE_WORKFLOW_ID}" --delete
 
-  smoketest:
+  promote_to_production:
     docker:
-     - image: circleci/node:13.8.0 
+      - image: amazon/aws-cli
     steps:
-      #- run: apk add --update curl
-      - run:
-          name: smoke test.
-          command: |
-            URL="34.220.2.77:3000"
-            if curl -s --head ${URL} # test if website exists
-            then
-              exit 0
-            else
-              exit 1
-            fi
-      #- run: return 1
-      - destroy_environment
+      - checkout
+      - run: |
+          aws cloudformation deploy \
+            --template-file cloudformation.yml \
+            --stack-name cloudfront \
+            --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID}"
 
 
-workflows:
-  my_workflo:
-    jobs:
-      - create-infrastructure:
-          requires:
-           - smoketest
-
+  workflows:
+    default:
+      jobs:
+        - create_and_deploy_front_end
+        - promote_to_production
+            requires: [create_and_deploy_front_end]
