@@ -19,8 +19,8 @@ jobs:   #Test SSH-fingerprints
           name: Create backend
           command: | 
                   aws cloudformation deploy \
-                  --stack-name udacity-project-"${CIRCLE_WORKFLOW_ID}" --template-body file://CF/template.yml \
-                  --region us-west-2
+                  --stack-name ID="${CIRCLE_WORKFLOW_ID}" --template-body file://CF/template.yml \
+                  --region=us-west-2
       - destroy_environment
 
   smoketest:
