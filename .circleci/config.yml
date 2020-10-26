@@ -1,0 +1,49 @@
+version: 2.1
+commands:
+  destroy_environment:
+    steps:
+      - run:
+          name: Destroy environment
+          command: |
+            aws cloudformation delete-stack --stack-name ID="${CIRCLE_WORKFLOW_ID}" --region=us-west-2
+          when: on_fail
+
+
+jobs:   #Test SSH-fingerprints
+  create-infrastructure:
+    docker:
+     - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Create backend
+          command: | 
+                  aws cloudformation deploy \
+                  --stack-name ID="${CIRCLE_WORKFLOW_ID}" --template-body file://CF/template.yml \
+                  --region us-west-2
+      - destroy_environment
+
+  smoketest:
+    docker:
+     - image: circleci/node:13.8.0 
+    steps:
+      #- run: apk add --update curl
+      - run:
+          name: smoke test.
+          command: |
+            URL="34.220.2.77:3000"
+            if curl -s --head ${URL} # test if website exists
+            then
+              exit 0
+            else
+              exit 1
+            fi
+      #- run: return 1
+      - destroy_environment
+
+
+workflows:
+  my_workflo:
+    jobs:
+      - smoketest
+
