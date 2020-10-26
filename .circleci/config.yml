@@ -46,6 +46,6 @@ workflows:
   my_workflo:
     jobs:
       - create-infrastructure
-        requires:
-          - smoketest
+          requires:
+           - smoketest
 
