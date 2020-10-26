@@ -45,7 +45,7 @@ jobs:   #Test SSH-fingerprints
 workflows:
   my_workflo:
     jobs:
-      - create-infrastructure
-          requires:
+      - create-infrastructure:
+         - requires:
            - smoketest
 
