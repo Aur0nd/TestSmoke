@@ -8,9 +8,9 @@ jobs:
       - run: |   #3rdline, just add a name it doesn't matter, 4th line, you need bucketname from the bucket file
           aws cloudformation deploy \
             --template-file bucket.yml \
-            --stack-name "testittt-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --stack-name "${CIRCLE_WORKFLOW_ID:0:7}" \
             --parameter-overrides entername="${CIRCLE_WORKFLOW_ID}"     
-      - run: aws s3 sync . s3://"testittt-${CIRCLE_WORKFLOW_ID:0:7}" --delete
+      - run: aws s3 sync . s3://"${CIRCLE_WORKFLOW_ID:0:7}" --delete
 # ${CIRCLE_WORKFLOW_ID:0:7} takes the first 7 chars of the variable CIRCLE_CI_WORKFLOW_ID
 
 
