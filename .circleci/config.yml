@@ -9,7 +9,7 @@ jobs:
           aws cloudformation deploy \
             --template-file bucket.yml \
             --stack-name "test-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --parameter-overrides entername="${CIRCLE_WORKFLOW_ID}"     
+            --parameter-overrides entername="${CIRCLE_WORKFLOW_ID:0:7}"     
       - run: aws s3 sync . s3://"$entername" --force
 
 
