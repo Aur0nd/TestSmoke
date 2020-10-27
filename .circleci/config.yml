@@ -22,7 +22,7 @@ jobs:
           aws cloudformation deploy \
             --template-file CloudFront.yml \
             --stack-name production-distro \
-            --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID}"
+            --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID:0:7}"
 
 
 workflows:
