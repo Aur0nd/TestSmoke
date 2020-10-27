@@ -8,9 +8,9 @@ jobs:
       - run: |   #3rdline, just add a name it doesn't matter, 4th line, you need bucketname from the bucket file
           aws cloudformation deploy \
             --template-file bucket.yml \
-            --stack-name "test22-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --parameter-overrides entername="${CIRCLE_WORKFLOW_ID:0:10}"     
-      - run: aws s3 sync . s3://"$entername" --force
+            --stack-name "test-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides entername="${CIRCLE_WORKFLOW_ID}"     
+      - run: aws s3 sync . s3://"test-${CIRCLE_WORKFLOW_ID:0:7}" --force
 
 
   promote_to_production:
