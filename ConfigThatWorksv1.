@@ -20,7 +20,7 @@ jobs:
       - checkout
       - run: |
           aws cloudformation deploy \
-            --template-file CloudFormation.yml \
+            --template-file CloudFront.yml \
             --stack-name production-distro \
             --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID}"
 
